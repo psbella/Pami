@@ -1,21 +1,9 @@
 let medicamentos = [];
 
-async function cargarDatos() {
-    try {
-        const response = await fetch('medicamentos.json');
-        if (!response.ok) throw new Error('No se pudo cargar el archivo');
-        medicamentos = await response.json();
-        mostrarResultados(medicamentos);
-    } catch (error) {
-        console.error(error);
-        document.getElementById('resultados').innerHTML = '<p>Error al cargar los datos. Asegurate de que el archivo medicamentos.json esté en la misma carpeta.</p>';
-    }
-}
-
 function mostrarResultados(lista) {
     const contenedor = document.getElementById('resultados');
     
-    if (lista.length === 0) {
+    if (!lista || lista.length === 0) {
         contenedor.innerHTML = '<p>No se encontraron medicamentos.</p>';
         return;
     }
@@ -38,6 +26,8 @@ function mostrarResultados(lista) {
 // Buscador en tiempo real
 document.getElementById('buscador').addEventListener('input', (e) => {
     const texto = e.target.value.toLowerCase();
+    if (!medicamentos.length) return;
+    
     const filtrados = medicamentos.filter(med => {
         const droga = (med.DROGA || med.droga || '').toLowerCase();
         const marca = (med.MARCA || med.marca || '').toLowerCase();
@@ -47,20 +37,14 @@ document.getElementById('buscador').addEventListener('input', (e) => {
     mostrarResultados(filtrados);
 });
 
-// Filtros por cobertura
-document.querySelectorAll('.filtro-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const cobertura = btn.dataset.cobertura;
-        if (cobertura) {
-            const filtrados = medicamentos.filter(med => {
-                const cov = med.COBERTURA || med.cobertura;
-                return cov === cobertura;
-            });
-            mostrarResultados(filtrados);
-        } else {
-            mostrarResultados(medicamentos);
-        }
+// Cargar datos
+fetch('medicamentos.json')
+    .then(response => response.json())
+    .then(data => {
+        medicamentos = data;
+        mostrarResultados(medicamentos);
+    })
+    .catch(error => {
+        console.error(error);
+        document.getElementById('resultados').innerHTML = '<p>Error al cargar los datos.</p>';
     });
-});
-
-cargarDatos();
