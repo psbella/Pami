@@ -47,11 +47,11 @@ function mapearMedicamento(item, idx) {
 function construirIndice() {
     indiceBusqueda = {};
     
-    medicamentos.forEach((med, idx) => {
-        const textoCompleto = med.DROGA_buscar + ' ' + med.MARCA_buscar + ' ' + med.LABORATORIO_buscar;
-        const palabras = textoCompleto.split(/\s+/);
+    medicamentos.forEach(function(med, idx) {
+        var textoCompleto = med.DROGA_buscar + ' ' + med.MARCA_buscar + ' ' + med.LABORATORIO_buscar;
+        var palabras = textoCompleto.split(/\s+/);
         
-        palabras.forEach(palabra => {
+        palabras.forEach(function(palabra) {
             if (palabra.length < 2) return;
             
             if (!indiceBusqueda[palabra]) {
@@ -59,8 +59,8 @@ function construirIndice() {
             }
             indiceBusqueda[palabra].add(idx);
             
-            for (let i = 2; i <= palabra.length; i++) {
-                const fragmento = palabra.substring(0, i);
+            for (var i = 2; i <= palabra.length; i++) {
+                var fragmento = palabra.substring(0, i);
                 if (!indiceBusqueda[fragmento]) {
                     indiceBusqueda[fragmento] = new Set();
                 }
@@ -69,23 +69,25 @@ function construirIndice() {
         });
     });
     
-    console.log("Indice construido");
+    console.log('Indice construido');
 }
 
 function buscarConIndice(texto) {
     if (!texto || texto.length < 2) return [...medicamentos];
     
-    const textoNormalizado = normalizarTexto(texto);
-    const resultadosSet = indiceBusqueda[textoNormalizado] || new Set();
+    var textoNormalizado = normalizarTexto(texto);
+    var resultadosSet = indiceBusqueda[textoNormalizado] || new Set();
     
-    return [...resultadosSet].map(idx => medicamentos[idx]);
+    return [...resultadosSet].map(function(idx) {
+        return medicamentos[idx];
+    });
 }
 
 function actualizarOpcionesFiltros(resultados) {
-    const presentaciones = new Set();
-    const laboratorios = new Set();
+    var presentaciones = new Set();
+    var laboratorios = new Set();
     
-    resultados.forEach(med => {
+    resultados.forEach(function(med) {
         if (med.PRESENTACION && med.PRESENTACION !== 'N/A') {
             presentaciones.add(med.PRESENTACION);
         }
@@ -94,16 +96,16 @@ function actualizarOpcionesFiltros(resultados) {
         }
     });
     
-    const selectPresentacion = document.getElementById('filtroPresentacion');
-    const selectLaboratorio = document.getElementById('filtroLaboratorio');
+    var selectPresentacion = document.getElementById('filtroPresentacion');
+    var selectLaboratorio = document.getElementById('filtroLaboratorio');
     
-    const selectedPres = selectPresentacion.value;
-    const selectedLab = selectLaboratorio.value;
+    var selectedPres = selectPresentacion.value;
+    var selectedLab = selectLaboratorio.value;
     
     selectPresentacion.innerHTML = '<option value="">Todas</option>';
-    const presOrdenadas = Array.from(presentaciones).sort();
-    presOrdenadas.forEach(p => {
-        const option = document.createElement('option');
+    var presOrdenadas = Array.from(presentaciones).sort();
+    presOrdenadas.forEach(function(p) {
+        var option = document.createElement('option');
         option.value = p;
         option.textContent = p.length > 50 ? p.substring(0, 50) + '...' : p;
         selectPresentacion.appendChild(option);
@@ -116,9 +118,9 @@ function actualizarOpcionesFiltros(resultados) {
     }
     
     selectLaboratorio.innerHTML = '<option value="">Todos</option>';
-    const labsOrdenados = Array.from(laboratorios).sort();
-    labsOrdenados.forEach(l => {
-        const option = document.createElement('option');
+    var labsOrdenados = Array.from(laboratorios).sort();
+    labsOrdenados.forEach(function(l) {
+        var option = document.createElement('option');
         option.value = l;
         option.textContent = l;
         selectLaboratorio.appendChild(option);
@@ -132,32 +134,40 @@ function actualizarOpcionesFiltros(resultados) {
 }
 
 function aplicarFiltrosYOrden(lista) {
-    let resultado = [...lista];
+    var resultado = [...lista];
     
-    const presentacion = document.getElementById('filtroPresentacion').value;
-    const laboratorio = document.getElementById('filtroLaboratorio').value;
-    const orden = document.getElementById('ordenPrecio').value;
+    var presentacion = document.getElementById('filtroPresentacion').value;
+    var laboratorio = document.getElementById('filtroLaboratorio').value;
+    var orden = document.getElementById('ordenPrecio').value;
     
     if (presentacion) {
-        resultado = resultado.filter(med => med.PRESENTACION === presentacion);
+        resultado = resultado.filter(function(med) {
+            return med.PRESENTACION === presentacion;
+        });
     }
     
     if (laboratorio) {
-        resultado = resultado.filter(med => med.LABORATORIO === laboratorio);
+        resultado = resultado.filter(function(med) {
+            return med.LABORATORIO === laboratorio;
+        });
     }
     
     if (orden === 'asc') {
-        resultado.sort((a, b) => a.COPAGO - b.COPAGO);
+        resultado.sort(function(a, b) {
+            return a.COPAGO - b.COPAGO;
+        });
     } else if (orden === 'desc') {
-        resultado.sort((a, b) => b.COPAGO - a.COPAGO);
+        resultado.sort(function(a, b) {
+            return b.COPAGO - a.COPAGO;
+        });
     }
     
     return resultado;
 }
 
 function mostrarResultados(lista) {
-    const contenedor = document.getElementById('resultados');
-    const contadorDiv = document.getElementById('contador');
+    var contenedor = document.getElementById('resultados');
+    var contadorDiv = document.getElementById('contador');
     
     if (!lista || lista.length === 0) {
         contenedor.innerHTML = '<div class="mensaje-inicial"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><line x1="15" y1="15" x2="21" y2="21"/></svg><p>No se encontraron medicamentos.</p></div>';
@@ -167,41 +177,41 @@ function mostrarResultados(lista) {
     
     contadorDiv.innerHTML = lista.length + ' resultado' + (lista.length !== 1 ? 's' : '');
     
-    const listaMostrar = lista.slice(0, 200);
+    var listaMostrar = lista.slice(0, 200);
     if (lista.length > 200) {
         contadorDiv.innerHTML += ' (mostrando 200 de ' + lista.length + ')';
     }
     
-    contenedor.innerHTML = listaMostrar.map(med => `
-        <div class="tarjeta">
-            <h3 class="marca-tarjeta">${med.MARCA || 'N/A'}</h3>
-            <div class="tabla-interna">
-                <div class="fila-tabla">
-                    <div class="celda etiqueta">Droga</div>
-                    <div class="celda valor">${med.DROGA || 'N/A'}</div>
-                </div>
-                <div class="fila-tabla">
-                    <div class="celda etiqueta">Presentación</div>
-                    <div class="celda valor">${med.PRESENTACION || 'N/A'}</div>
-                </div>
-                <div class="fila-tabla">
-                    <div class="celda etiqueta">Cobertura</div>
-                    <div class="celda valor"><span class="cobertura-tag">${med.COBERTURA || '?'}%</span></div>
-                </div>
-                <div class="fila-tabla">
-                    <div class="celda etiqueta">Precio final</div>
-                    <div class="celda valor precio-destacado">$${(med.COPAGO || 0).toLocaleString()}</div>
-                </div>
-            </div>
-            <div class="laboratorio-tarjeta">${med.LABORATORIO || 'N/A'}</div>
-        </div>
-    `).join('');
+    contenedor.innerHTML = listaMostrar.map(function(med) {
+        return '<div class="tarjeta">' +
+            '<h3 class="marca-tarjeta">' + (med.MARCA || 'N/A') + '</h3>' +
+            '<div class="tabla-interna">' +
+                '<div class="fila-tabla">' +
+                    '<div class="celda etiqueta">Droga</div>' +
+                    '<div class="celda valor">' + (med.DROGA || 'N/A') + '</div>' +
+                '</div>' +
+                '<div class="fila-tabla">' +
+                    '<div class="celda etiqueta">Presentación</div>' +
+                    '<div class="celda valor">' + (med.PRESENTACION || 'N/A') + '</div>' +
+                '</div>' +
+                '<div class="fila-tabla">' +
+                    '<div class="celda etiqueta">Cobertura</div>' +
+                    '<div class="celda valor"><span class="cobertura-tag">' + (med.COBERTURA || '?') + '%</span></div>' +
+                '</div>' +
+                '<div class="fila-tabla">' +
+                    '<div class="celda etiqueta">Precio final</div>' +
+                    '<div class="celda valor precio-destacado">$' + (med.COPAGO || 0).toLocaleString() + '</div>' +
+                '</div>' +
+            '</div>' +
+            '<div class="laboratorio-tarjeta">' + (med.LABORATORIO || 'N/A') + '</div>' +
+        '</div>';
+    }).join('');
 }
 
 function actualizarTodo() {
-    const textoBusqueda = document.getElementById('buscador').value.trim();
+    var textoBusqueda = document.getElementById('buscador').value.trim();
     
-    let resultados;
+    var resultados;
     if (textoBusqueda && textoBusqueda.length >= 2) {
         resultados = buscarConIndice(textoBusqueda);
     } else {
@@ -212,21 +222,21 @@ function actualizarTodo() {
     
     actualizarOpcionesFiltros(resultados);
     
-    const resultadosFinales = aplicarFiltrosYOrden(resultados);
+    var resultadosFinales = aplicarFiltrosYOrden(resultados);
     mostrarResultados(resultadosFinales);
 }
 
 function setupEventListeners() {
-    const buscador = document.getElementById('buscador');
-    const btnBuscar = document.getElementById('btnBuscar');
-    const filtroPresentacion = document.getElementById('filtroPresentacion');
-    const filtroLaboratorio = document.getElementById('filtroLaboratorio');
-    const ordenPrecio = document.getElementById('ordenPrecio');
+    var buscador = document.getElementById('buscador');
+    var btnBuscar = document.getElementById('btnBuscar');
+    var filtroPresentacion = document.getElementById('filtroPresentacion');
+    var filtroLaboratorio = document.getElementById('filtroLaboratorio');
+    var ordenPrecio = document.getElementById('ordenPrecio');
     
     buscador.addEventListener('input', function(e) {
         clearTimeout(timeoutBuscador);
         
-        const texto = e.target.value.trim();
+        var texto = e.target.value.trim();
         
         if (texto === '') {
             timeoutBuscador = setTimeout(function() {
@@ -256,27 +266,28 @@ function setupEventListeners() {
     }
     
     filtroPresentacion.addEventListener('change', function() {
-        const resultadosFiltrados = aplicarFiltrosYOrden(resultadosUltimaBusqueda);
+        var resultadosFiltrados = aplicarFiltrosYOrden(resultadosUltimaBusqueda);
         mostrarResultados(resultadosFiltrados);
     });
     
     filtroLaboratorio.addEventListener('change', function() {
-        const resultadosFiltrados = aplicarFiltrosYOrden(resultadosUltimaBusqueda);
+        var resultadosFiltrados = aplicarFiltrosYOrden(resultadosUltimaBusqueda);
         mostrarResultados(resultadosFiltrados);
     });
     
     ordenPrecio.addEventListener('change', function() {
-        const resultadosFiltrados = aplicarFiltrosYOrden(resultadosUltimaBusqueda);
+        var resultadosFiltrados = aplicarFiltrosYOrden(resultadosUltimaBusqueda);
         mostrarResultados(resultadosFiltrados);
     });
 }
 
+// Cargar datos
 fetch('medicamentos.json')
     .then(function(response) {
         return response.json();
     })
     .then(function(data) {
-        let datosMedicamentos = data;
+        var datosMedicamentos = data;
         if (data.length > 0 && (data[0].DROGA !== undefined || data[0].A !== undefined)) {
             datosMedicamentos = data;
         }
@@ -288,6 +299,11 @@ fetch('medicamentos.json')
         console.log('Cargados ' + medicamentos.length + ' medicamentos');
         
         construirIndice();
+        
+        // 🔥 Inicializar filtros con TODOS los medicamentos
+        resultadosUltimaBusqueda = [...medicamentos];
+        actualizarOpcionesFiltros(medicamentos);
+        
         setupEventListeners();
         
         document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><line x1="15" y1="15" x2="21" y2="21"/></svg><p>Buscá un medicamento para ver los resultados</p></div>';
