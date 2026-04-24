@@ -11,7 +11,33 @@
         <h1>💊 Buscador de Medicamentos PAMI</h1>
         <p>Precios actualizados - Lo que pagás como afiliado</p>
         
-        <input type="text" id="buscador" placeholder="Escribí para buscar por droga, marca o laboratorio...">
+        <input type="text" id="buscador" placeholder="Buscá por droga, marca o laboratorio...">
+        
+        <!-- Filtros y orden -->
+        <div class="filtros-container">
+            <div class="filtro-grupo">
+                <label>Presentación:</label>
+                <select id="filtroPresentacion">
+                    <option value="">Todas</option>
+                </select>
+            </div>
+            
+            <div class="filtro-grupo">
+                <label>Laboratorio:</label>
+                <select id="filtroLaboratorio">
+                    <option value="">Todos</option>
+                </select>
+            </div>
+            
+            <div class="filtro-grupo">
+                <label>Ordenar por precio:</label>
+                <select id="ordenPrecio">
+                    <option value="">Sin orden</option>
+                    <option value="asc">💰 Más barato primero</option>
+                    <option value="desc">💰 Más caro primero</option>
+                </select>
+            </div>
+        </div>
         
         <div id="contador" class="contador"></div>
         
