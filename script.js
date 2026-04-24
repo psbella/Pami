@@ -1,9 +1,11 @@
 let medicamentos = [];
+let indiceBusqueda = {};     // Índice: palabra -> array de índices
+let timeoutBuscador;
 
-function mapearMedicamento(item) {
-    // Si el item ya tiene las claves en mayúsculas directas, usarlas
+function mapearMedicamento(item, idx) {
     if (item.DROGA !== undefined) {
         return {
+            id: idx,
             DROGA: item.DROGA || '',
             MARCA: item.MARCA || '',
             PRESENTACION: item.PRESENTACION || '',
@@ -13,11 +15,11 @@ function mapearMedicamento(item) {
         };
     }
     
-    // Si viene con claves A,B,C,D,E,F (formato original)
     let cobertura = (item.E || '').replace('%', '');
     let precio = (item.F || '0').replace('$', '').replace(/\s/g, '').replace(',', '');
     
     return {
+        id: idx,
         DROGA: item.A || '',
         MARCA: item.B || '',
         PRESENTACION: item.C || '',
@@ -27,11 +29,56 @@ function mapearMedicamento(item) {
     };
 }
 
+// Construir el índice invertido
+function construirIndice() {
+    indiceBusqueda = {};
+    
+    medicamentos.forEach((med, idx) => {
+        // Texto completo a indexar (todo en minúsculas)
+        const textoCompleto = `${med.DROGA} ${med.MARCA} ${med.LABORATORIO}`.toLowerCase();
+        
+        // Extraer palabras individuales (dividir por espacios)
+        const palabras = textoCompleto.split(/\s+/);
+        
+        // Para cada palabra, agregar este medicamento al índice
+        palabras.forEach(palabra => {
+            if (palabra.length < 2) return; // Ignorar palabras de 1 letra
+            
+            if (!indiceBusqueda[palabra]) {
+                indiceBusqueda[palabra] = new Set(); // Set evita duplicados
+            }
+            indiceBusqueda[palabra].add(idx);
+        });
+    });
+    
+    console.log(`✅ Índice construido con ${Object.keys(indiceBusqueda).length} palabras únicas`);
+}
+
+// Buscar usando el índice
+function buscarConIndice(texto) {
+    if (!texto || texto.length < 2) {
+        return []; // No buscar con menos de 2 letras
+    }
+    
+    const palabrasBusqueda = texto.toLowerCase().split(/\s+/);
+    
+    // Obtener resultados para la primera palabra
+    let resultadosSet = indiceBusqueda[palabrasBusqueda[0]] || new Set();
+    
+    // Intersectar con las demás palabras
+    for (let i = 1; i < palabrasBusqueda.length; i++) {
+        const resultadosPalabra = indiceBusqueda[palabrasBusqueda[i]] || new Set();
+        resultadosSet = new Set([...resultadosSet].filter(idx => resultadosPalabra.has(idx)));
+        if (resultadosSet.size === 0) break;
+    }
+    
+    // Devolver los medicamentos correspondientes
+    return [...resultadosSet].map(idx => medicamentos[idx]);
+}
+
 function mostrarResultados(lista) {
     const contenedor = document.getElementById('resultados');
     const contadorDiv = document.getElementById('contador');
-    
-    console.log('Mostrando resultados:', lista.length); // Debug
     
     if (!lista || lista.length === 0) {
         contenedor.innerHTML = '<div class="mensaje-inicial">🔍 No se encontraron medicamentos. Probá con otra palabra.</div>';
@@ -41,7 +88,13 @@ function mostrarResultados(lista) {
     
     contadorDiv.innerHTML = `${lista.length} resultado${lista.length !== 1 ? 's' : ''}`;
     
-    contenedor.innerHTML = lista.map(med => `
+    // Limitar a 100 resultados
+    const listaMostrar = lista.slice(0, 100);
+    if (lista.length > 100) {
+        contadorDiv.innerHTML += ` (mostrando 100 de ${lista.length})`;
+    }
+    
+    contenedor.innerHTML = listaMostrar.map(med => `
         <div class="tarjeta">
             <h3 class="marca-tarjeta">${med.MARCA || 'N/A'}</h3>
             <div class="tabla-interna">
@@ -67,63 +120,75 @@ function mostrarResultados(lista) {
     `).join('');
 }
 
-// Buscador
-const buscador = document.getElementById('buscador');
-if (buscador) {
-    buscador.addEventListener('input', (e) => {
-        const texto = e.target.value.toLowerCase().trim();
-        console.log('Buscando:', texto, 'Total medicamentos:', medicamentos.length); // Debug
-        
-        if (!medicamentos.length) return;
-        
-        if (texto === '') {
-            // Si no hay texto, mostrar mensaje inicial (no resultados)
-            document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial">🔍 Buscá un medicamento para ver los resultados</div>';
-            document.getElementById('contador').innerHTML = '';
-            return;
-        }
-        
-        const filtrados = medicamentos.filter(med => {
+// Búsqueda con índice + debounce
+function ejecutarBusqueda(texto) {
+    if (texto === '') {
+        document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial">🔍 Buscá un medicamento para ver los resultados</div>';
+        document.getElementById('contador').innerHTML = '';
+        return;
+    }
+    
+    // Usar índice si está disponible, sino búsqueda lineal
+    let resultados;
+    if (Object.keys(indiceBusqueda).length > 0) {
+        resultados = buscarConIndice(texto);
+    } else {
+        // Fallback a búsqueda lineal
+        resultados = medicamentos.filter(med => {
             const droga = (med.DROGA || '').toLowerCase();
             const marca = (med.MARCA || '').toLowerCase();
             const lab = (med.LABORATORIO || '').toLowerCase();
             return droga.includes(texto) || marca.includes(texto) || lab.includes(texto);
         });
+    }
+    
+    mostrarResultados(resultados);
+}
+
+// Buscador con debounce
+const buscador = document.getElementById('buscador');
+if (buscador) {
+    buscador.addEventListener('input', (e) => {
+        const texto = e.target.value.toLowerCase().trim();
         
-        console.log('Filtrados:', filtrados.length); // Debug
-        mostrarResultados(filtrados);
+        clearTimeout(timeoutBuscador);
+        
+        if (texto !== '' && texto.length < 2) {
+            document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial">🔍 Escribí al menos 2 letras para buscar</div>';
+            document.getElementById('contador').innerHTML = '';
+            return;
+        }
+        
+        if (texto !== '') {
+            document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial">⏳ Buscando...</div>';
+        }
+        
+        timeoutBuscador = setTimeout(() => {
+            ejecutarBusqueda(texto);
+        }, 200);
     });
 }
 
-// Cargar datos
+// Cargar datos y construir índice
 fetch('medicamentos.json')
-    .then(response => {
-        console.log('Respuesta del servidor:', response.status); // Debug
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
-        console.log('Datos cargados, tipo:', Array.isArray(data) ? 'array' : typeof data);
-        console.log('Primeros 3 items:', data.slice(0, 3));
-        
-        // Detectar formato automáticamente
         let datosMedicamentos = data;
-        
-        // Si la primera fila parece un encabezado (con A,B,C o DROGA, etc.)
-        if (data.length > 0 && (data[0].A !== undefined || data[0].DROGA !== undefined)) {
-            // Ya está en formato correcto o es el formato con A,B,C
+        if (data.length > 0 && (data[0].DROGA !== undefined || data[0].A !== undefined)) {
             datosMedicamentos = data;
         }
         
-        medicamentos = datosMedicamentos.map(mapearMedicamento);
-        console.log('Medicamentos procesados:', medicamentos.length);
-        console.log('Primer medicamento mapeado:', medicamentos[0]);
+        // Mapear medicamentos
+        medicamentos = datosMedicamentos.map((item, idx) => mapearMedicamento(item, idx));
+        console.log(`✅ Cargados ${medicamentos.length} medicamentos`);
         
-        // Mostrar mensaje inicial (vacío)
+        // Construir índice invertido
+        construirIndice();
+        
         document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial">🔍 Buscá un medicamento para ver los resultados</div>';
         document.getElementById('contador').innerHTML = '';
     })
     .catch(error => {
-        console.error('ERROR DETAIL:', error);
+        console.error(error);
         document.getElementById('resultados').innerHTML = `<p>Error al cargar los datos: ${error.message}</p>`;
     });
