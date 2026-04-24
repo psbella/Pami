@@ -1,6 +1,7 @@
 let medicamentos = [];
 let indiceBusqueda = {};
 let timeoutBuscador;
+let resultadosActuales = [];
 
 // Eliminar acentos
 function normalizarTexto(texto) {
@@ -81,12 +82,60 @@ function buscarConIndice(texto) {
     return [...resultadosSet].map(idx => medicamentos[idx]);
 }
 
+// Actualizar las opciones de los filtros según los resultados actuales
+function actualizarOpcionesFiltros(resultados) {
+    const presentaciones = new Set();
+    const laboratorios = new Set();
+    
+    resultados.forEach(med => {
+        if (med.PRESENTACION) presentaciones.add(med.PRESENTACION);
+        if (med.LABORATORIO) laboratorios.add(med.LABORATORIO);
+    });
+    
+    const selectPresentacion = document.getElementById('filtroPresentacion');
+    const selectLaboratorio = document.getElementById('filtroLaboratorio');
+    
+    // Guardar valores seleccionados actuales
+    const selectedPresentacion = selectPresentacion.value;
+    const selectedLaboratorio = selectLaboratorio.value;
+    
+    // Limpiar y volver a llenar Presentación
+    selectPresentacion.innerHTML = '<option value="">Todas</option>';
+    const presOrdenadas = Array.from(presentaciones).sort();
+    presOrdenadas.forEach(p => {
+        const option = document.createElement('option');
+        option.value = p;
+        option.textContent = p.length > 40 ? p.substring(0, 40) + '...' : p;
+        selectPresentacion.appendChild(option);
+    });
+    
+    // Restaurar selección si aún existe
+    if (presentaciones.has(selectedPresentacion)) {
+        selectPresentacion.value = selectedPresentacion;
+    }
+    
+    // Limpiar y volver a llenar Laboratorio
+    selectLaboratorio.innerHTML = '<option value="">Todos</option>';
+    const labsOrdenados = Array.from(laboratorios).sort();
+    labsOrdenados.forEach(l => {
+        const option = document.createElement('option');
+        option.value = l;
+        option.textContent = l;
+        selectLaboratorio.appendChild(option);
+    });
+    
+    // Restaurar selección si aún existe
+    if (laboratorios.has(selectedLaboratorio)) {
+        selectLaboratorio.value = selectedLaboratorio;
+    }
+}
+
 function aplicarFiltrosYOrden(lista) {
     let resultado = [...lista];
     
-    const presentacion = document.getElementById('filtroPresentacion')?.value;
-    const laboratorio = document.getElementById('filtroLaboratorio')?.value;
-    const orden = document.getElementById('ordenPrecio')?.value;
+    const presentacion = document.getElementById('filtroPresentacion').value;
+    const laboratorio = document.getElementById('filtroLaboratorio').value;
+    const orden = document.getElementById('ordenPrecio').value;
     
     if (presentacion) {
         resultado = resultado.filter(med => med.PRESENTACION === presentacion);
@@ -153,46 +202,29 @@ function actualizarResultados() {
     
     let resultados = medicamentos;
     
-    // Si hay texto de búsqueda y tiene al menos 2 letras, filtrar
     if (busquedaTexto && busquedaTexto.length >= 2) {
         resultados = buscarConIndice(busquedaTexto);
     }
     
+    // Guardar resultados actuales para referencia
+    resultadosActuales = resultados;
+    
+    // Actualizar filtros según los resultados de búsqueda
+    actualizarOpcionesFiltros(resultados);
+    
+    // Aplicar filtros y orden
     const resultadosFiltrados = aplicarFiltrosYOrden(resultados);
     mostrarResultados(resultadosFiltrados);
 }
 
-function cargarOpcionesFiltros() {
-    const presentaciones = new Set();
-    const laboratorios = new Set();
-    
-    medicamentos.forEach(med => {
-        if (med.PRESENTACION) presentaciones.add(med.PRESENTACION);
-        if (med.LABORATORIO) laboratorios.add(med.LABORATORIO);
-    });
-    
-    const selectPresentacion = document.getElementById('filtroPresentacion');
-    const selectLaboratorio = document.getElementById('filtroLaboratorio');
-    
-    const presOrdenadas = Array.from(presentaciones).sort();
-    const labsOrdenados = Array.from(laboratorios).sort();
-    
-    presOrdenadas.forEach(p => {
-        const option = document.createElement('option');
-        option.value = p;
-        option.textContent = p.length > 40 ? p.substring(0, 40) + '...' : p;
-        selectPresentacion.appendChild(option);
-    });
-    
-    labsOrdenados.forEach(l => {
-        const option = document.createElement('option');
-        option.value = l;
-        option.textContent = l;
-        selectLaboratorio.appendChild(option);
-    });
+// Resetear filtros (opcional)
+function resetearFiltros() {
+    document.getElementById('filtroPresentacion').value = '';
+    document.getElementById('filtroLaboratorio').value = '';
+    document.getElementById('ordenPrecio').value = '';
+    actualizarResultados();
 }
 
-// Configurar eventos
 function setupEventListeners() {
     const buscador = document.getElementById('buscador');
     const btnBuscar = document.getElementById('btnBuscar');
@@ -200,14 +232,13 @@ function setupEventListeners() {
     const filtroLaboratorio = document.getElementById('filtroLaboratorio');
     const ordenPrecio = document.getElementById('ordenPrecio');
     
-    // Búsqueda en tiempo real (con debounce)
+    // Búsqueda en tiempo real
     buscador.addEventListener('input', (e) => {
         clearTimeout(timeoutBuscador);
         
         const texto = e.target.value.trim();
         
         if (texto === '') {
-            // Si está vacío, mostrar resultados sin filtro de texto
             timeoutBuscador = setTimeout(() => {
                 actualizarResultados();
             }, 100);
@@ -227,18 +258,25 @@ function setupEventListeners() {
         }, 200);
     });
     
-    // Botón buscar (fuerza la búsqueda)
-    if (btnBuscar) {
-        btnBuscar.addEventListener('click', () => {
-            clearTimeout(timeoutBuscador);
-            actualizarResultados();
-        });
-    }
+    btnBuscar.addEventListener('click', () => {
+        clearTimeout(timeoutBuscador);
+        actualizarResultados();
+    });
     
-    // Filtros y orden
-    filtroPresentacion.addEventListener('change', () => actualizarResultados());
-    filtroLaboratorio.addEventListener('change', () => actualizarResultados());
-    ordenPrecio.addEventListener('change', () => actualizarResultados());
+    filtroPresentacion.addEventListener('change', () => {
+        const resultadosFiltrados = aplicarFiltrosYOrden(resultadosActuales);
+        mostrarResultados(resultadosFiltrados);
+    });
+    
+    filtroLaboratorio.addEventListener('change', () => {
+        const resultadosFiltrados = aplicarFiltrosYOrden(resultadosActuales);
+        mostrarResultados(resultadosFiltrados);
+    });
+    
+    ordenPrecio.addEventListener('change', () => {
+        const resultadosFiltrados = aplicarFiltrosYOrden(resultadosActuales);
+        mostrarResultados(resultadosFiltrados);
+    });
 }
 
 // Cargar datos
@@ -254,10 +292,8 @@ fetch('medicamentos.json')
         console.log(`✅ Cargados ${medicamentos.length} medicamentos`);
         
         construirIndice();
-        cargarOpcionesFiltros();
         setupEventListeners();
         
-        // Mostrar mensaje inicial
         document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial">🔍 Buscá un medicamento para ver los resultados</div>';
         document.getElementById('contador').innerHTML = '';
     })
