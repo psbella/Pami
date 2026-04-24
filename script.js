@@ -11,6 +11,24 @@ function normalizarTexto(texto) {
         .replace(/[\u0300-\u036f]/g, "");
 }
 
+function animarContadorDesdeCero(valorFinal) {
+    const span = document.getElementById('totalMedicamentos');
+    let inicio = 0;
+    const duracion = 800;
+    const paso = 16;
+    const incremento = valorFinal / (duracion / paso);
+
+    const intervalo = setInterval(() => {
+        inicio += incremento;
+        if (inicio >= valorFinal) {
+            span.innerText = valorFinal.toLocaleString();
+            clearInterval(intervalo);
+        } else {
+            span.innerText = Math.floor(inicio).toLocaleString();
+        }
+    }, paso);
+}
+
 function mapearMedicamento(item, idx) {
     if (item.DROGA !== undefined) {
         return {
@@ -212,8 +230,13 @@ function actualizarTodo() {
     var textoBusqueda = document.getElementById('buscador').value.trim();
     
     var resultados;
-    if (textoBusqueda && textoBusqueda.length >= 2) {
+    if (textoBusqueda && textoBusqueda.length >= 3) {
         resultados = buscarConIndice(textoBusqueda);
+    } else if (textoBusqueda && textoBusqueda.length < 3) {
+        // No buscar con menos de 3 caracteres
+        document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><line x1="15" y1="15" x2="21" y2="21"/></svg><p>Ingresá al menos 3 caracteres para buscar</p></div>';
+        document.getElementById('contador').innerHTML = '';
+        return;
     } else {
         resultados = [...medicamentos];
     }
@@ -245,8 +268,8 @@ function setupEventListeners() {
             return;
         }
         
-        if (texto.length < 2) {
-            document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><line x1="15" y1="15" x2="21" y2="21"/></svg><p>Escribí al menos 2 letras</p></div>';
+        if (texto.length < 3) {
+            document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><line x1="15" y1="15" x2="21" y2="21"/></svg><p>Ingresá al menos 3 caracteres</p></div>';
             document.getElementById('contador').innerHTML = '';
             return;
         }
@@ -300,7 +323,10 @@ fetch('medicamentos.json')
         
         construirIndice();
         
-        // 🔥 Inicializar filtros con TODOS los medicamentos
+        // Animar contador
+        animarContadorDesdeCero(medicamentos.length);
+        
+        // Inicializar filtros con TODOS los medicamentos
         resultadosUltimaBusqueda = [...medicamentos];
         actualizarOpcionesFiltros(medicamentos);
         
