@@ -38,36 +38,33 @@ function construirIndice() {
         
         palabras.forEach(palabra => {
             if (palabra.length < 2) return;
+            
+            // Palabra completa
             if (!indiceBusqueda[palabra]) {
                 indiceBusqueda[palabra] = new Set();
             }
             indiceBusqueda[palabra].add(idx);
+            
+            // Fragmentos (para búsqueda parcial)
+            for (let i = 2; i <= palabra.length; i++) {
+                const fragmento = palabra.substring(0, i);
+                if (!indiceBusqueda[fragmento]) {
+                    indiceBusqueda[fragmento] = new Set();
+                }
+                indiceBusqueda[fragmento].add(idx);
+            }
         });
     });
     
-    console.log(`✅ Índice construido con ${Object.keys(indiceBusqueda).length} palabras únicas`);
-    console.log(`🔍 Ejemplo de índice: "aspirina" → ${indiceBusqueda['aspirina'] ? indiceBusqueda['aspirina'].size : 0} resultados`);
+    console.log(`✅ Índice construido con ${Object.keys(indiceBusqueda).length} palabras/fragmentos`);
 }
 
 function buscarConIndice(texto) {
-    if (!texto || texto.length < 2) {
-        return [];
-    }
+    if (!texto || texto.length < 2) return [];
     
-    const palabrasBusqueda = texto.toLowerCase().split(/\s+/);
-    console.log(`🔍 Buscando: "${texto}" | Palabras:`, palabrasBusqueda);
+    const textoNormalizado = texto.toLowerCase();
+    const resultadosSet = indiceBusqueda[textoNormalizado] || new Set();
     
-    let resultadosSet = indiceBusqueda[palabrasBusqueda[0]] || new Set();
-    console.log(`   Primera palabra "${palabrasBusqueda[0]}": ${resultadosSet.size} resultados`);
-    
-    for (let i = 1; i < palabrasBusqueda.length; i++) {
-        const resultadosPalabra = indiceBusqueda[palabrasBusqueda[i]] || new Set();
-        console.log(`   Palabra "${palabrasBusqueda[i]}": ${resultadosPalabra.size} resultados`);
-        resultadosSet = new Set([...resultadosSet].filter(idx => resultadosPalabra.has(idx)));
-        if (resultadosSet.size === 0) break;
-    }
-    
-    console.log(`   Total después de intersección: ${resultadosSet.size} resultados`);
     return [...resultadosSet].map(idx => medicamentos[idx]);
 }
 
@@ -76,7 +73,7 @@ function mostrarResultados(lista) {
     const contadorDiv = document.getElementById('contador');
     
     if (!lista || lista.length === 0) {
-        contenedor.innerHTML = '<div class="mensaje-inicial">🔍 No se encontraron medicamentos. Probá con otra palabra.</div>';
+        contenedor.innerHTML = '<div class="mensaje-inicial">🔍 No se encontraron medicamentos.</div>';
         contadorDiv.innerHTML = '0 resultados';
         return;
     }
@@ -114,39 +111,21 @@ function mostrarResultados(lista) {
 }
 
 function ejecutarBusqueda(texto) {
-    console.log(`🚀 ejecutarBusqueda llamado con: "${texto}"`);
-    
     if (texto === '') {
         document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial">🔍 Buscá un medicamento para ver los resultados</div>';
         document.getElementById('contador').innerHTML = '';
         return;
     }
     
-    let resultados;
-    if (Object.keys(indiceBusqueda).length > 0) {
-        resultados = buscarConIndice(texto);
-        console.log(`📊 Resultados del índice: ${resultados.length}`);
-    } else {
-        resultados = medicamentos.filter(med => {
-            const droga = (med.DROGA || '').toLowerCase();
-            const marca = (med.MARCA || '').toLowerCase();
-            const lab = (med.LABORATORIO || '').toLowerCase();
-            return droga.includes(texto) || marca.includes(texto) || lab.includes(texto);
-        });
-        console.log(`📊 Resultados búsqueda lineal: ${resultados.length}`);
-    }
-    
+    const resultados = buscarConIndice(texto);
     mostrarResultados(resultados);
 }
 
 // Buscador
 const buscador = document.getElementById('buscador');
 if (buscador) {
-    console.log('✅ Buscador encontrado, agregando event listener');
-    
     buscador.addEventListener('input', (e) => {
-        const texto = e.target.value.toLowerCase().trim();
-        console.log(`⌨️ Input detectado: "${texto}"`);
+        const texto = e.target.value.trim();
         
         clearTimeout(timeoutBuscador);
         
@@ -166,38 +145,26 @@ if (buscador) {
         
         timeoutBuscador = setTimeout(() => {
             ejecutarBusqueda(texto);
-        }, 300);
+        }, 200);
     });
-} else {
-    console.error('❌ No se encontró el elemento con id "buscador"');
 }
 
 // Cargar datos
-console.log('🔄 Iniciando carga de datos...');
 fetch('medicamentos.json')
-    .then(response => {
-        console.log('📡 Respuesta del servidor:', response.status);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
-        console.log('📦 JSON cargado. Tipo:', Array.isArray(data) ? 'array' : typeof data);
-        console.log('📊 Cantidad total de registros:', data.length);
-        
         let datosMedicamentos = data;
         if (data.length > 0 && (data[0].DROGA !== undefined || data[0].A !== undefined)) {
             datosMedicamentos = data;
         }
         
         medicamentos = datosMedicamentos.map((item, idx) => mapearMedicamento(item, idx));
-        console.log(`✅ Cargados ${medicamentos.length} medicamentos`);
-        
         construirIndice();
         
         document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial">🔍 Buscá un medicamento para ver los resultados</div>';
         document.getElementById('contador').innerHTML = '';
     })
     .catch(error => {
-        console.error('❌ ERROR FATAL:', error);
+        console.error(error);
         document.getElementById('resultados').innerHTML = `<p>Error al cargar los datos: ${error.message}</p>`;
     });
