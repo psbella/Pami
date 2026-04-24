@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Precios PAMI - Buscador de Medicamentos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>💊 Buscador de Medicamentos PAMI</h1>
+        <p>Precios actualizados - Lo que pagás como afiliado</p>
+        
+        <input type="text" id="buscador" placeholder="Buscá por droga, marca o laboratorio...">
+        
+        <div class="filtros">
+            <button class="filtro-btn" data-cobertura="80">80% cobertura</button>
+            <button class="filtro-btn" data-cobertura="60">60% cobertura</button>
+            <button class="filtro-btn" data-cobertura="50">50% cobertura</button>
+            <button class="filtro-btn" data-cobertura="40">40% cobertura</button>
+            <button class="filtro-btn" id="btn-todos">Todos</button>
+        </div>
+        
+        <div id="resultados" class="resultados"></div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+                              </html>
