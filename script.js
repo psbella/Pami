@@ -1,5 +1,5 @@
 let medicamentos = [];
-let indiceBusqueda = {};     // Índice: palabra -> array de índices
+let indiceBusqueda = {};
 let timeoutBuscador;
 
 function mapearMedicamento(item, idx) {
@@ -29,50 +29,45 @@ function mapearMedicamento(item, idx) {
     };
 }
 
-// Construir el índice invertido
 function construirIndice() {
     indiceBusqueda = {};
     
     medicamentos.forEach((med, idx) => {
-        // Texto completo a indexar (todo en minúsculas)
         const textoCompleto = `${med.DROGA} ${med.MARCA} ${med.LABORATORIO}`.toLowerCase();
-        
-        // Extraer palabras individuales (dividir por espacios)
         const palabras = textoCompleto.split(/\s+/);
         
-        // Para cada palabra, agregar este medicamento al índice
         palabras.forEach(palabra => {
-            if (palabra.length < 2) return; // Ignorar palabras de 1 letra
-            
+            if (palabra.length < 2) return;
             if (!indiceBusqueda[palabra]) {
-                indiceBusqueda[palabra] = new Set(); // Set evita duplicados
+                indiceBusqueda[palabra] = new Set();
             }
             indiceBusqueda[palabra].add(idx);
         });
     });
     
     console.log(`✅ Índice construido con ${Object.keys(indiceBusqueda).length} palabras únicas`);
+    console.log(`🔍 Ejemplo de índice: "aspirina" → ${indiceBusqueda['aspirina'] ? indiceBusqueda['aspirina'].size : 0} resultados`);
 }
 
-// Buscar usando el índice
 function buscarConIndice(texto) {
     if (!texto || texto.length < 2) {
-        return []; // No buscar con menos de 2 letras
+        return [];
     }
     
     const palabrasBusqueda = texto.toLowerCase().split(/\s+/);
+    console.log(`🔍 Buscando: "${texto}" | Palabras:`, palabrasBusqueda);
     
-    // Obtener resultados para la primera palabra
     let resultadosSet = indiceBusqueda[palabrasBusqueda[0]] || new Set();
+    console.log(`   Primera palabra "${palabrasBusqueda[0]}": ${resultadosSet.size} resultados`);
     
-    // Intersectar con las demás palabras
     for (let i = 1; i < palabrasBusqueda.length; i++) {
         const resultadosPalabra = indiceBusqueda[palabrasBusqueda[i]] || new Set();
+        console.log(`   Palabra "${palabrasBusqueda[i]}": ${resultadosPalabra.size} resultados`);
         resultadosSet = new Set([...resultadosSet].filter(idx => resultadosPalabra.has(idx)));
         if (resultadosSet.size === 0) break;
     }
     
-    // Devolver los medicamentos correspondientes
+    console.log(`   Total después de intersección: ${resultadosSet.size} resultados`);
     return [...resultadosSet].map(idx => medicamentos[idx]);
 }
 
@@ -87,8 +82,6 @@ function mostrarResultados(lista) {
     }
     
     contadorDiv.innerHTML = `${lista.length} resultado${lista.length !== 1 ? 's' : ''}`;
-    
-    // Limitar a 100 resultados
     const listaMostrar = lista.slice(0, 100);
     if (lista.length > 100) {
         contadorDiv.innerHTML += ` (mostrando 100 de ${lista.length})`;
@@ -120,75 +113,91 @@ function mostrarResultados(lista) {
     `).join('');
 }
 
-// Búsqueda con índice + debounce
 function ejecutarBusqueda(texto) {
+    console.log(`🚀 ejecutarBusqueda llamado con: "${texto}"`);
+    
     if (texto === '') {
         document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial">🔍 Buscá un medicamento para ver los resultados</div>';
         document.getElementById('contador').innerHTML = '';
         return;
     }
     
-    // Usar índice si está disponible, sino búsqueda lineal
     let resultados;
     if (Object.keys(indiceBusqueda).length > 0) {
         resultados = buscarConIndice(texto);
+        console.log(`📊 Resultados del índice: ${resultados.length}`);
     } else {
-        // Fallback a búsqueda lineal
         resultados = medicamentos.filter(med => {
             const droga = (med.DROGA || '').toLowerCase();
             const marca = (med.MARCA || '').toLowerCase();
             const lab = (med.LABORATORIO || '').toLowerCase();
             return droga.includes(texto) || marca.includes(texto) || lab.includes(texto);
         });
+        console.log(`📊 Resultados búsqueda lineal: ${resultados.length}`);
     }
     
     mostrarResultados(resultados);
 }
 
-// Buscador con debounce
+// Buscador
 const buscador = document.getElementById('buscador');
 if (buscador) {
+    console.log('✅ Buscador encontrado, agregando event listener');
+    
     buscador.addEventListener('input', (e) => {
         const texto = e.target.value.toLowerCase().trim();
+        console.log(`⌨️ Input detectado: "${texto}"`);
         
         clearTimeout(timeoutBuscador);
         
-        if (texto !== '' && texto.length < 2) {
-            document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial">🔍 Escribí al menos 2 letras para buscar</div>';
+        if (texto === '') {
+            document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial">🔍 Buscá un medicamento para ver los resultados</div>';
             document.getElementById('contador').innerHTML = '';
             return;
         }
         
-        if (texto !== '') {
-            document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial">⏳ Buscando...</div>';
+        if (texto.length < 2) {
+            document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial">🔍 Escribí al menos 2 letras</div>';
+            document.getElementById('contador').innerHTML = '';
+            return;
         }
+        
+        document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial">⏳ Buscando...</div>';
         
         timeoutBuscador = setTimeout(() => {
             ejecutarBusqueda(texto);
-        }, 200);
+        }, 300);
     });
+} else {
+    console.error('❌ No se encontró el elemento con id "buscador"');
 }
 
-// Cargar datos y construir índice
+// Cargar datos
+console.log('🔄 Iniciando carga de datos...');
 fetch('medicamentos.json')
-    .then(response => response.json())
+    .then(response => {
+        console.log('📡 Respuesta del servidor:', response.status);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+    })
     .then(data => {
+        console.log('📦 JSON cargado. Tipo:', Array.isArray(data) ? 'array' : typeof data);
+        console.log('📊 Cantidad total de registros:', data.length);
+        
         let datosMedicamentos = data;
         if (data.length > 0 && (data[0].DROGA !== undefined || data[0].A !== undefined)) {
             datosMedicamentos = data;
         }
         
-        // Mapear medicamentos
         medicamentos = datosMedicamentos.map((item, idx) => mapearMedicamento(item, idx));
         console.log(`✅ Cargados ${medicamentos.length} medicamentos`);
         
-        // Construir índice invertido
         construirIndice();
         
         document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial">🔍 Buscá un medicamento para ver los resultados</div>';
         document.getElementById('contador').innerHTML = '';
     })
     .catch(error => {
-        console.error(error);
+        console.error('❌ ERROR FATAL:', error);
         document.getElementById('resultados').innerHTML = `<p>Error al cargar los datos: ${error.message}</p>`;
     });
