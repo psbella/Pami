@@ -13,11 +13,12 @@
         body {
             font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+            min-height: 100vh;
             padding: 20px;
             color: #202124;
         }
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
         }
         .card {
@@ -25,28 +26,66 @@
             border-radius: 24px;
             padding: 32px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            border: 1px solid rgba(26,115,232,0.1);
         }
         h1 {
-            color: #1a73e8;
+            background: linear-gradient(135deg, #1a73e8, #0d47a1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
             font-size: 1.8rem;
             margin-bottom: 8px;
+            font-weight: 700;
         }
         .fecha {
             color: #5f6368;
             font-size: 14px;
             margin-bottom: 24px;
             padding-bottom: 16px;
-            border-bottom: 1px solid #e8eaed;
+            border-bottom: 2px solid #e8eaed;
+        }
+        .resumen-simple {
+            background: linear-gradient(135deg, #e8f0fe 0%, #f0f4ff 100%);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 24px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            border-left: 4px solid #1a73e8;
+        }
+        .resumen-simple svg {
+            flex-shrink: 0;
+        }
+        .resumen-simple p {
+            margin: 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .compromiso {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 20px;
+            margin: 24px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            border: 1px solid #e8eaed;
+        }
+        .compromiso svg {
+            flex-shrink: 0;
         }
         h2 {
             color: #1a73e8;
             font-size: 1.3rem;
-            margin: 24px 0 12px 0;
+            margin: 28px 0 12px 0;
+            font-weight: 600;
         }
         h3 {
             color: #202124;
             font-size: 1.1rem;
             margin: 20px 0 8px 0;
+            font-weight: 600;
         }
         p, li {
             color: #5f6368;
@@ -60,32 +99,41 @@
         li {
             margin-bottom: 6px;
         }
-        .highlight {
-            background: #f8f9fa;
-            padding: 16px;
-            border-radius: 12px;
-            margin: 20px 0;
-            border-left: 4px solid #1a73e8;
+        a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
         }
         .volver {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             margin-top: 32px;
             padding: 12px 24px;
-            background: #1a73e8;
+            background: linear-gradient(135deg, #1a73e8, #0d47a1);
             color: white;
             text-decoration: none;
-            border-radius: 12px;
+            border-radius: 16px;
             font-weight: 500;
-            transition: background 0.2s;
+            transition: all 0.3s ease;
         }
         .volver:hover {
-            background: #0d47a1;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(26,115,232,0.4);
+            text-decoration: none;
         }
         footer {
             margin-top: 24px;
             text-align: center;
             font-size: 12px;
             color: #9aa0a6;
+        }
+        hr {
+            margin: 24px 0;
+            border: none;
+            border-top: 1px solid #e8eaed;
         }
         @media (max-width: 600px) {
             .card {
@@ -97,6 +145,10 @@
             h2 {
                 font-size: 1.2rem;
             }
+            .resumen-simple, .compromiso {
+                flex-direction: column;
+                gap: 12px;
+            }
         }
     </style>
 </head>
@@ -106,10 +158,13 @@
             <h1>Política de Privacidad</h1>
             <div class="fecha">Última actualización: Abril 2025</div>
             
-            <p>En <strong>Buscador de Medicamentos PAMI</strong> (en adelante, "el Sitio"), nos tomamos muy en serio tu privacidad. Esta política explica qué información recopilamos, cómo la usamos y qué derechos tenés sobre tus datos.</p>
-            
-            <div class="highlight">
-                📌 <strong>Resumen simple:</strong> No recopilamos datos personales. No guardamos tu historial de búsquedas. No usamos cookies de rastreo. La publicidad (si la hubiera) es general.
+            <!-- RESUMEN SIMPLE CON SVG -->
+            <div class="resumen-simple">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="1.8">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 8v4M12 16h.01"/>
+                </svg>
+                <p><strong>🔒 Resumen simple:</strong> No recopilamos datos personales. No guardamos tu historial de búsquedas. No usamos cookies de rastreo. La publicidad (si la hubiera) es general.</p>
             </div>
             
             <h2>1. Información que recopilamos</h2>
@@ -151,19 +206,32 @@
                 <li><strong>Solicitar su eliminación</strong>.</li>
                 <li><strong>Oponerte</strong> al tratamiento.</li>
             </ul>
-            <p>Para ejercer estos derechos (o cualquier consulta), contactanos a: <strong>pabellabella.dev@gmail.com</strong> (o el email que uses).</p>
+            <p>Para ejercer estos derechos (o cualquier consulta), contactanos a: <strong>pablo.s.bella@gmail.com</strong></p>
             
             <h2>8. Cambios en esta política</h2>
             <p>Podemos actualizar esta Política de Privacidad ocasionalmente. La versión más reciente siempre estará disponible en esta URL. Te recomendamos revisarla periódicamente.</p>
             
             <h2>9. Contacto</h2>
-            <p>Si tenés dudas sobre esta política o sobre cómo manejamos tus datos, escribinos a: <strong>pabellabella.dev@gmail.com</strong></p>
+            <p>Si tenés dudas sobre esta política o sobre cómo manejamos tus datos, escribinos a: <strong>pablo.s.bella@gmail.com</strong></p>
             
-            <div class="highlight">
-                ✅ <strong>Compromiso:</strong> Tu privacidad es importante. No rastreamos tus búsquedas, no guardamos tu historial y no compartimos datos con terceros.
+            <hr>
+            
+            <!-- COMPROMISO CON SVG -->
+            <div class="compromiso">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="1.8">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <p><strong>✅ Compromiso:</strong> Tu privacidad es importante. No rastreamos tus búsquedas, no guardamos tu historial y no compartimos datos con terceros.</p>
             </div>
             
-            <a href="/" class="volver">← Volver al buscador</a>
+            <a href="/" class="volver">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12"/>
+                    <polyline points="12 19 5 12 12 5"/>
+                </svg>
+                Volver al buscador
+            </a>
         </div>
         <footer>
             Buscador de Medicamentos PAMI - Datos públicos de datos.pami.org.ar
