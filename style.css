@@ -1,258 +1,219 @@
-let medicamentos = [];
-let medicamentosFiltrados = [];
-let indiceBusqueda = {};
-let timeoutBuscador;
-let busquedaActual = '';
-
-// Eliminar acentos
-function normalizarTexto(texto) {
-    if (!texto) return '';
-    return texto
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-function mapearMedicamento(item, idx) {
-    if (item.DROGA !== undefined) {
-        return {
-            id: idx,
-            DROGA: item.DROGA || '',
-            MARCA: item.MARCA || '',
-            PRESENTACION: item.PRESENTACION || '',
-            LABORATORIO: item.LABORATORIO || '',
-            COBERTURA: (item.COBERTURA || '').replace('%', ''),
-            COPAGO: parseFloat(String(item.COPAGO || 0).replace('$', '').replace(/\s/g, '').replace(',', '')) || 0,
-            DROGA_buscar: normalizarTexto(item.DROGA || ''),
-            MARCA_buscar: normalizarTexto(item.MARCA || ''),
-            LABORATORIO_buscar: normalizarTexto(item.LABORATORIO || '')
-        };
+body {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #f0f2f5;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h1 {
+    color: #1a73e8;
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+}
+
+.container > p {
+    color: #5f6368;
+    margin-bottom: 20px;
+}
+
+#buscador {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-family: inherit;
+}
+
+#buscador:focus {
+    outline: none;
+    border-color: #1a73e8;
+    box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
+}
+
+/* Filtros */
+.filtros-container {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.filtro-grupo {
+    flex: 1;
+    min-width: 150px;
+}
+
+.filtro-grupo label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #5f6368;
+    margin-bottom: 5px;
+}
+
+.filtro-grupo select {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.filtro-grupo select:focus {
+    outline: none;
+    border-color: #1a73e8;
+}
+
+.contador {
+    margin: 10px 0 20px 0;
+    font-size: 14px;
+    color: #5f6368;
+    text-align: right;
+}
+
+.mensaje-inicial {
+    text-align: center;
+    color: #5f6368;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 16px;
+    font-size: 1rem;
+}
+
+/* Tarjetas */
+.tarjeta {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.marca-tarjeta {
+    color: #1a73e8;
+    font-size: 1.1rem;
+    margin: 0 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e8eaed;
+}
+
+.tabla-interna {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.fila-tabla {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f2f5;
+}
+
+.fila-tabla:last-child {
+    border-bottom: none;
+}
+
+.celda {
+    font-size: 14px;
+}
+
+.celda.etiqueta {
+    color: #5f6368;
+    font-weight: 500;
+    width: 100px;
+}
+
+.celda.valor {
+    color: #202124;
+    text-align: right;
+    flex: 1;
+}
+
+.precio-destacado {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #1a73e8;
+}
+
+.cobertura-tag {
+    background: #e8f0fe;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #1a73e8;
+    display: inline-block;
+}
+
+.laboratorio-tarjeta {
+    font-size: 12px;
+    color: #5f6368;
+    padding-top: 8px;
+    margin-top: 8px;
+    border-top: 1px solid #e8eaed;
+    text-align: right;
+}
+
+/* Resultados */
+.resultados {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Responsive para celulares */
+@media (max-width: 600px) {
+    body {
+        padding: 12px;
     }
     
-    let cobertura = (item.E || '').replace('%', '');
-    let precio = (item.F || '0').replace('$', '').replace(/\s/g, '').replace(',', '');
-    
-    return {
-        id: idx,
-        DROGA: item.A || '',
-        MARCA: item.B || '',
-        PRESENTACION: item.C || '',
-        LABORATORIO: item.D || '',
-        COBERTURA: cobertura,
-        COPAGO: parseFloat(precio) || 0,
-        DROGA_buscar: normalizarTexto(item.A || ''),
-        MARCA_buscar: normalizarTexto(item.B || ''),
-        LABORATORIO_buscar: normalizarTexto(item.D || '')
-    };
-}
-
-function construirIndice() {
-    indiceBusqueda = {};
-    
-    medicamentos.forEach((med, idx) => {
-        const textoCompleto = `${med.DROGA_buscar} ${med.MARCA_buscar} ${med.LABORATORIO_buscar}`;
-        const palabras = textoCompleto.split(/\s+/);
-        
-        palabras.forEach(palabra => {
-            if (palabra.length < 2) return;
-            
-            if (!indiceBusqueda[palabra]) {
-                indiceBusqueda[palabra] = new Set();
-            }
-            indiceBusqueda[palabra].add(idx);
-            
-            for (let i = 2; i <= palabra.length; i++) {
-                const fragmento = palabra.substring(0, i);
-                if (!indiceBusqueda[fragmento]) {
-                    indiceBusqueda[fragmento] = new Set();
-                }
-                indiceBusqueda[fragmento].add(idx);
-            }
-        });
-    });
-    
-    console.log(`✅ Índice construido`);
-}
-
-function buscarConIndice(texto) {
-    if (!texto || texto.length < 2) return [...medicamentos];
-    
-    const textoNormalizado = normalizarTexto(texto);
-    const resultadosSet = indiceBusqueda[textoNormalizado] || new Set();
-    
-    return [...resultadosSet].map(idx => medicamentos[idx]);
-}
-
-// Obtener valores únicos para filtros
-function cargarOpcionesFiltros() {
-    const presentaciones = new Set();
-    const laboratorios = new Set();
-    
-    medicamentos.forEach(med => {
-        if (med.PRESENTACION) presentaciones.add(med.PRESENTACION);
-        if (med.LABORATORIO) laboratorios.add(med.LABORATORIO);
-    });
-    
-    const selectPresentacion = document.getElementById('filtroPresentacion');
-    const selectLaboratorio = document.getElementById('filtroLaboratorio');
-    
-    // Ordenar alfabéticamente
-    const presOrdenadas = Array.from(presentaciones).sort();
-    const labsOrdenados = Array.from(laboratorios).sort();
-    
-    presOrdenadas.forEach(p => {
-        const option = document.createElement('option');
-        option.value = p;
-        option.textContent = p.length > 40 ? p.substring(0, 40) + '...' : p;
-        selectPresentacion.appendChild(option);
-    });
-    
-    labsOrdenados.forEach(l => {
-        const option = document.createElement('option');
-        option.value = l;
-        option.textContent = l;
-        selectLaboratorio.appendChild(option);
-    });
-    
-    console.log(`✅ Filtros cargados: ${presentaciones.size} presentaciones, ${laboratorios.size} laboratorios`);
-}
-
-// Aplicar filtros y orden a una lista
-function aplicarFiltrosYOrden(lista) {
-    let resultado = [...lista];
-    
-    const presentacion = document.getElementById('filtroPresentacion').value;
-    const laboratorio = document.getElementById('filtroLaboratorio').value;
-    const orden = document.getElementById('ordenPrecio').value;
-    
-    if (presentacion) {
-        resultado = resultado.filter(med => med.PRESENTACION === presentacion);
+    h1 {
+        font-size: 1.4rem;
     }
     
-    if (laboratorio) {
-        resultado = resultado.filter(med => med.LABORATORIO === laboratorio);
+    .filtros-container {
+        flex-direction: column;
+        gap: 10px;
     }
     
-    if (orden === 'asc') {
-        resultado.sort((a, b) => a.COPAGO - b.COPAGO);
-    } else if (orden === 'desc') {
-        resultado.sort((a, b) => b.COPAGO - a.COPAGO);
+    .filtro-grupo {
+        min-width: 100%;
     }
     
-    return resultado;
+    .celda.etiqueta {
+        width: 80px;
+        font-size: 12px;
+    }
+    
+    .celda.valor {
+        font-size: 12px;
+    }
+    
+    .precio-destacado {
+        font-size: 1rem;
+    }
+    
+    .marca-tarjeta {
+        font-size: 1rem;
+    }
 }
-
-function mostrarResultados(lista) {
-    const contenedor = document.getElementById('resultados');
-    const contadorDiv = document.getElementById('contador');
-    
-    if (!lista || lista.length === 0) {
-        contenedor.innerHTML = '<div class="mensaje-inicial">🔍 No se encontraron medicamentos.</div>';
-        contadorDiv.innerHTML = '0 resultados';
-        return;
-    }
-    
-    contadorDiv.innerHTML = `${lista.length} resultado${lista.length !== 1 ? 's' : ''}`;
-    
-    const listaMostrar = lista.slice(0, 200);
-    if (lista.length > 200) {
-        contadorDiv.innerHTML += ` (mostrando 200 de ${lista.length})`;
-    }
-    
-    contenedor.innerHTML = listaMostrar.map(med => `
-        <div class="tarjeta">
-            <h3 class="marca-tarjeta">${med.MARCA || 'N/A'}</h3>
-            <div class="tabla-interna">
-                <div class="fila-tabla">
-                    <div class="celda etiqueta">Droga</div>
-                    <div class="celda valor">${med.DROGA || 'N/A'}</div>
-                </div>
-                <div class="fila-tabla">
-                    <div class="celda etiqueta">Presentación</div>
-                    <div class="celda valor">${med.PRESENTACION || 'N/A'}</div>
-                </div>
-                <div class="fila-tabla">
-                    <div class="celda etiqueta">Cobertura</div>
-                    <div class="celda valor"><span class="cobertura-tag">${med.COBERTURA || '?'}%</span></div>
-                </div>
-                <div class="fila-tabla">
-                    <div class="celda etiqueta">Precio final</div>
-                    <div class="celda valor precio-destacado">$${(med.COPAGO || 0).toLocaleString()}</div>
-                </div>
-            </div>
-            <div class="laboratorio-tarjeta">${med.LABORATORIO || 'N/A'}</div>
-        </div>
-    `).join('');
-}
-
-function actualizarResultados() {
-    let resultados = medicamentos;
-    
-    if (busquedaActual && busquedaActual.length >= 2) {
-        resultados = buscarConIndice(busquedaActual);
-    }
-    
-    const resultadosFiltrados = aplicarFiltrosYOrden(resultados);
-    mostrarResultados(resultadosFiltrados);
-}
-
-// Event listeners
-function setupEventListeners() {
-    const buscador = document.getElementById('buscador');
-    const filtroPresentacion = document.getElementById('filtroPresentacion');
-    const filtroLaboratorio = document.getElementById('filtroLaboratorio');
-    const ordenPrecio = document.getElementById('ordenPrecio');
-    
-    buscador.addEventListener('input', (e) => {
-        const texto = e.target.value.trim();
-        busquedaActual = texto;
-        
-        clearTimeout(timeoutBuscador);
-        
-        if (texto === '') {
-            document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial">🔍 Buscá un medicamento para ver los resultados</div>';
-            document.getElementById('contador').innerHTML = '';
-            return;
-        }
-        
-        if (texto.length < 2) {
-            document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial">🔍 Escribí al menos 2 letras</div>';
-            document.getElementById('contador').innerHTML = '';
-            return;
-        }
-        
-        document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial">⏳ Buscando...</div>';
-        
-        timeoutBuscador = setTimeout(() => {
-            actualizarResultados();
-        }, 200);
-    });
-    
-    filtroPresentacion.addEventListener('change', () => actualizarResultados());
-    filtroLaboratorio.addEventListener('change', () => actualizarResultados());
-    ordenPrecio.addEventListener('change', () => actualizarResultados());
-}
-
-// Cargar datos
-fetch('medicamentos.json')
-    .then(response => response.json())
-    .then(data => {
-        let datosMedicamentos = data;
-        if (data.length > 0 && (data[0].DROGA !== undefined || data[0].A !== undefined)) {
-            datosMedicamentos = data;
-        }
-        
-        medicamentos = datosMedicamentos.map((item, idx) => mapearMedicamento(item, idx));
-        console.log(`✅ Cargados ${medicamentos.length} medicamentos`);
-        
-        construirIndice();
-        cargarOpcionesFiltros();
-        setupEventListeners();
-        
-        document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial">🔍 Buscá un medicamento para ver los resultados</div>';
-        document.getElementById('contador').innerHTML = '';
-    })
-    .catch(error => {
-        console.error(error);
-        document.getElementById('resultados').innerHTML = `<p>Error al cargar los datos: ${error.message}</p>`;
-    });
