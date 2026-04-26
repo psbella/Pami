@@ -13,6 +13,8 @@ function normalizarTexto(texto) {
 
 function animarContadorDesdeCero(valorFinal) {
     const span = document.getElementById('totalMedicamentos');
+    if (!span) return;
+    
     let inicio = 0;
     const duracion = 800;
     const paso = 16;
@@ -87,7 +89,7 @@ function construirIndice() {
         });
     });
     
-    console.log('Indice construido');
+    console.log('Índice construido');
 }
 
 function buscarConIndice(texto) {
@@ -232,11 +234,6 @@ function actualizarTodo() {
     var resultados;
     if (textoBusqueda && textoBusqueda.length >= 3) {
         resultados = buscarConIndice(textoBusqueda);
-    } else if (textoBusqueda && textoBusqueda.length < 3) {
-        // No buscar con menos de 3 caracteres
-        document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><line x1="15" y1="15" x2="21" y2="21"/></svg><p>Ingresá al menos 3 caracteres para buscar</p></div>';
-        document.getElementById('contador').innerHTML = '';
-        return;
     } else {
         resultados = [...medicamentos];
     }
@@ -249,9 +246,17 @@ function actualizarTodo() {
     mostrarResultados(resultadosFinales);
 }
 
+function limpiarFiltros() {
+    document.getElementById('filtroPresentacion').value = '';
+    document.getElementById('filtroLaboratorio').value = '';
+    document.getElementById('ordenPrecio').value = '';
+    actualizarTodo();
+}
+
 function setupEventListeners() {
     var buscador = document.getElementById('buscador');
     var btnBuscar = document.getElementById('btnBuscar');
+    var btnLimpiar = document.getElementById('btnLimpiarFiltros');
     var filtroPresentacion = document.getElementById('filtroPresentacion');
     var filtroLaboratorio = document.getElementById('filtroLaboratorio');
     var ordenPrecio = document.getElementById('ordenPrecio');
@@ -286,6 +291,10 @@ function setupEventListeners() {
             clearTimeout(timeoutBuscador);
             actualizarTodo();
         });
+    }
+    
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener('click', limpiarFiltros);
     }
     
     filtroPresentacion.addEventListener('change', function() {
@@ -323,10 +332,8 @@ fetch('medicamentos.json')
         
         construirIndice();
         
-        // Animar contador
         animarContadorDesdeCero(medicamentos.length);
         
-        // Inicializar filtros con TODOS los medicamentos
         resultadosUltimaBusqueda = [...medicamentos];
         actualizarOpcionesFiltros(medicamentos);
         
