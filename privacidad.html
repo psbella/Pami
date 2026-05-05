@@ -3,110 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Política de Privacidad - Buscador de Medicamentos PAMI</title>
+    <title>Política de Privacidad - Buscador PAMI</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: #202124;
-        }
-        .container {
+        .legal-container {
             max-width: 900px;
             margin: 0 auto;
-        }
-        .card {
             background: white;
             border-radius: 24px;
-            padding: 32px;
+            padding: 40px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            border: 1px solid rgba(26,115,232,0.1);
         }
-        h1 {
+        .legal-container h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
             background: linear-gradient(135deg, #1a73e8, #0d47a1);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            font-size: 1.8rem;
-            margin-bottom: 8px;
-            font-weight: 700;
         }
-        .fecha {
+        .legal-container h2 {
+            color: #1a73e8;
+            font-size: 1.3rem;
+            margin: 28px 0 12px 0;
+        }
+        .legal-container p, .legal-container li {
+            color: #5f6368;
+            line-height: 1.6;
+        }
+        .legal-container ul {
+            margin-left: 24px;
+            margin-bottom: 16px;
+        }
+        .legal-container .fecha {
             color: #5f6368;
             font-size: 14px;
             margin-bottom: 24px;
             padding-bottom: 16px;
             border-bottom: 2px solid #e8eaed;
         }
-        .resumen-simple {
-            background: linear-gradient(135deg, #e8f0fe 0%, #f0f4ff 100%);
-            border-radius: 20px;
+        .legal-container .resumen {
+            background: #e8f0fe;
+            border-radius: 16px;
             padding: 20px;
             margin: 24px 0;
-            display: flex;
-            align-items: flex-start;
-            gap: 16px;
             border-left: 4px solid #1a73e8;
-        }
-        .resumen-simple svg {
-            flex-shrink: 0;
-        }
-        .resumen-simple p {
-            margin: 0;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-        .compromiso {
-            background: #f8f9fa;
-            border-radius: 20px;
-            padding: 20px;
-            margin: 24px 0;
             display: flex;
             align-items: flex-start;
-            gap: 16px;
-            border: 1px solid #e8eaed;
+            gap: 12px;
         }
-        .compromiso svg {
-            flex-shrink: 0;
-        }
-        h2 {
-            color: #1a73e8;
-            font-size: 1.3rem;
-            margin: 28px 0 12px 0;
-            font-weight: 600;
-        }
-        h3 {
-            color: #202124;
-            font-size: 1.1rem;
-            margin: 20px 0 8px 0;
-            font-weight: 600;
-        }
-        p, li {
-            color: #5f6368;
-            line-height: 1.5;
-            margin-bottom: 12px;
-        }
-        ul {
-            margin-left: 24px;
-            margin-bottom: 16px;
-        }
-        li {
-            margin-bottom: 6px;
-        }
-        a {
-            color: #1a73e8;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        .volver {
+        .btn-volver {
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -119,113 +65,71 @@
             font-weight: 500;
             transition: all 0.3s ease;
         }
-        .volver:hover {
+        .btn-volver:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 16px rgba(26,115,232,0.4);
-            text-decoration: none;
-        }
-        footer {
-            margin-top: 24px;
-            text-align: center;
-            font-size: 12px;
-            color: #9aa0a6;
-        }
-        hr {
-            margin: 24px 0;
-            border: none;
-            border-top: 1px solid #e8eaed;
         }
         @media (max-width: 600px) {
-            .card {
+            .legal-container {
                 padding: 20px;
-            }
-            h1 {
-                font-size: 1.5rem;
-            }
-            h2 {
-                font-size: 1.2rem;
-            }
-            .resumen-simple, .compromiso {
-                flex-direction: column;
-                gap: 12px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="card">
+        <div class="legal-container">
             <h1>Política de Privacidad</h1>
-            <div class="fecha">Última actualización: Abril 2025</div>
+            <div class="fecha">Última actualización: Mayo 2026</div>
             
-            <!-- RESUMEN SIMPLE CON SVG -->
-            <div class="resumen-simple">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="1.8">
+            <div class="resumen">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="1.8">
                     <circle cx="12" cy="12" r="10"/>
                     <path d="M12 8v4M12 16h.01"/>
                 </svg>
-                <p><strong>🔒 Resumen simple:</strong> No recopilamos datos personales. No guardamos tu historial de búsquedas. No usamos cookies de rastreo. La publicidad (si la hubiera) es general.</p>
+                <div>
+                    <strong>Resumen:</strong> No recopilamos datos personales. No guardamos tu historial de búsquedas. Las búsquedas son privadas.
+                </div>
             </div>
-            
+
             <h2>1. Información que recopilamos</h2>
-            <p><strong>No recopilamos información personal identificable</strong> (como nombre, email, dirección, etc.).</p>
-            <p>La única información que puede generarse al usar el Sitio es:</p>
+            <p><strong>No recopilamos información personal identificable</strong> (nombre, email, dirección, etc.).</p>
+            <p>La única información que puede generarse:</p>
             <ul>
-                <li><strong>Consultas de búsqueda:</strong> Los términos que escribís en el buscador <strong>no se guardan</strong> en nuestros servidores. Se procesan localmente en tu dispositivo.</li>
-                <li><strong>Datos de uso anónimos:</strong> Podemos usar herramientas como Google Analytics para saber cuántas personas visitan el Sitio, qué páginas ven y cuánto tiempo permanecen. Estos datos son <strong>anónimos y agregados</strong>, no permiten identificarte personalmente.</li>
-                <li><strong>Cookies técnicas:</strong> Usamos cookies esenciales para que el Sitio funcione correctamente (por ejemplo, recordar tus preferencias de ordenamiento). No usamos cookies de rastreo publicitario sin tu consentimiento.</li>
+                <li><strong>Consultas de búsqueda:</strong> Se procesan localmente en tu dispositivo, no se guardan en nuestros servidores.</li>
+                <li><strong>Cookies técnicas:</strong> Solo para recordar tus preferencias de ordenamiento.</li>
+                <li><strong>Google AdSense:</strong> Puede usar cookies para mostrar publicidad personalizada. Más información en la sección 6.</li>
             </ul>
-            
+
             <h2>2. Cómo usamos tu información</h2>
-            <p>La información que podamos recopilar se usa exclusivamente para:</p>
+            <p>La información se usa exclusivamente para:</p>
             <ul>
-                <li>Mejorar la experiencia de búsqueda y el rendimiento del Sitio.</li>
-                <li>Analizar tendencias de uso (de forma totalmente anónima).</li>
-                <li>Detectar y corregir errores técnicos.</li>
+                <li>Mejorar la experiencia de búsqueda</li>
+                <li>Detectar y corregir errores técnicos</li>
+                <li>Mantener el funcionamiento del sitio</li>
             </ul>
-            <p><strong>Nunca vendemos, alquilamos ni compartimos tus datos con terceros.</strong></p>
-            
-            <h2>3. Datos de farmacias o profesionales (si aplica)</h2>
-            <p>Si utilizás alguna funcionalidad destinada a farmacias o profesionales de la salud, podríamos solicitar información adicional como email o CUIT. En ese caso, te informaremos específicamente y solo la usaremos para los fines declarados (ej: identificar tu perfil). No compartiremos esos datos con terceros sin tu consentimiento explícito.</p>
-            
-            <h2>4. Servicios de terceros</h2>
-            <p>El Sitio puede incluir enlaces a sitios externos (como GitHub, redes sociales, etc.). Esta Política de Privacidad solo aplica a nuestro Sitio. No somos responsables por las prácticas de privacidad de otros sitios.</p>
-            <p>Si utilizamos servicios de analítica como Google Analytics, estos pueden recopilar datos anónimos. Podés consultar la <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Política de Privacidad de Google</a> para más información.</p>
-            
-            <h2>5. Publicidad</h2>
-            <p>Actualmente el Sitio <strong>no muestra publicidad de terceros</strong>. Si en el futuro incorporamos publicidad, te informaremos con claridad y te ofreceremos opciones de control sobre las cookies de rastreo.</p>
-            
-            <h2>6. Seguridad</h2>
-            <p>Implementamos medidas de seguridad técnicas y organizativas para proteger tu información. Sin embargo, ninguna transmisión por Internet es 100% segura. Usamos el Sitio bajo tu propia responsabilidad.</p>
-            
-            <h2>7. Tus derechos (Ley 25.326 - Argentina / GDPR)</h2>
-            <p>Dado que no recopilamos datos personales, no hay información específica que podamos modificar o eliminar. Si por algún motivo tenemos datos tuyos, tenés derecho a:</p>
-            <ul>
-                <li><strong>Acceder</strong> a tus datos.</li>
-                <li><strong>Rectificarlos</strong> si son incorrectos.</li>
-                <li><strong>Solicitar su eliminación</strong>.</li>
-                <li><strong>Oponerte</strong> al tratamiento.</li>
-            </ul>
-            <p>Para ejercer estos derechos (o cualquier consulta), contactanos a: <strong>pablo.s.bella@gmail.com</strong></p>
-            
-            <h2>8. Cambios en esta política</h2>
-            <p>Podemos actualizar esta Política de Privacidad ocasionalmente. La versión más reciente siempre estará disponible en esta URL. Te recomendamos revisarla periódicamente.</p>
-            
-            <h2>9. Contacto</h2>
-            <p>Si tenés dudas sobre esta política o sobre cómo manejamos tus datos, escribinos a: <strong>pablo.s.bella@gmail.com</strong></p>
-            
-            <hr>
-            
-            <!-- COMPROMISO CON SVG -->
-            <div class="compromiso">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="1.8">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                    <polyline points="22 4 12 14.01 9 11.01"/>
-                </svg>
-                <p><strong>✅ Compromiso:</strong> Tu privacidad es importante. No rastreamos tus búsquedas, no guardamos tu historial y no compartimos datos con terceros.</p>
-            </div>
-            
-            <a href="/" class="volver">
+
+            <h2>3. Servicios de terceros</h2>
+            <p>El sitio está alojado en <strong>GitHub Pages</strong>. Consultá su <a href="https://docs.github.com/es/site-policy/privacy-policies/github-general-privacy-statement" target="_blank">Política de Privacidad</a>.</p>
+
+            <h2>4. Seguridad</h2>
+            <p>Implementamos medidas de seguridad técnicas. Sin embargo, ninguna transmisión por Internet es 100% segura. Usás el sitio bajo tu propia responsabilidad.</p>
+
+            <h2>5. Tus derechos (Ley 25.326 - Argentina / GDPR)</h2>
+            <p>Dado que no recopilamos datos personales, no hay información específica que podamos modificar o eliminar. Si por algún motivo tenemos datos tuyos, tenés derecho a acceder, rectificar o solicitar su eliminación escribiendo a <strong>pablo.s.bella@gmail.com</strong>.</p>
+
+            <h2>6. Google AdSense</h2>
+            <p>Este sitio utiliza Google AdSense para mostrar publicidad. Google puede usar cookies para mostrar anuncios basados en tus visitas a este y otros sitios web.</p>
+            <p>Para más información sobre cómo Google usa los datos, visitá: <a href="https://policies.google.com/technologies/ads" target="_blank">https://policies.google.com/technologies/ads</a></p>
+            <p>Podés desactivar la publicidad personalizada en: <a href="https://adssettings.google.com" target="_blank">https://adssettings.google.com</a></p>
+
+            <h2>7. Cambios en esta política</h2>
+            <p>Podemos actualizar esta Política de Privacidad ocasionalmente. La versión más reciente siempre estará disponible en esta URL.</p>
+
+            <h2>8. Contacto</h2>
+            <p>Si tenés dudas, escribinos a: <strong>pablo.s.bella@gmail.com</strong></p>
+
+            <a href="/" class="btn-volver">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
                     <line x1="19" y1="12" x2="5" y2="12"/>
                     <polyline points="12 19 5 12 12 5"/>
@@ -233,9 +137,6 @@
                 Volver al buscador
             </a>
         </div>
-        <footer>
-            Buscador de Medicamentos PAMI - Datos públicos de datos.pami.org.ar
-        </footer>
     </div>
 </body>
 </html>
