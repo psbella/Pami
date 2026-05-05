@@ -313,25 +313,34 @@ function setupEventListeners() {
     });
 }
 
-// Cargar fecha de actualización
-function cargarFechaActualizacion() {
-    fetch('fecha_actualizacion.json')
-        .then(function(response) {
-            return response.json();
-        })
-        .then(function(data) {
-            var fechaElem = document.getElementById('fecha-actualizacion');
-            if (fechaElem && data.fecha) {
-                fechaElem.textContent = data.fecha;
-            }
-        })
-        .catch(function(error) {
-            console.error('Error al cargar fecha:', error);
-            var fechaElem = document.getElementById('fecha-actualizacion');
-            if (fechaElem) {
-                fechaElem.textContent = 'No disponible';
-            }
-        });
+.then(function(data) {
+    // Detectar formato del JSON
+    var fechaActualizacion = null;
+    var datosMedicamentos = null;
+    
+    if (data.medicamentos && Array.isArray(data.medicamentos)) {
+        // Formato nuevo: {fecha: "...", medicamentos: [...]}
+        fechaActualizacion = data.fecha;
+        datosMedicamentos = data.medicamentos;
+    } else if (Array.isArray(data)) {
+        // Formato viejo: solo el array de medicamentos
+        fechaActualizacion = null;
+        datosMedicamentos = data;
+    } else {
+        throw new Error('Formato de datos inválido');
+    }
+    
+    // Mostrar fecha si existe
+    var fechaElem = document.getElementById('fecha-actualizacion');
+    if (fechaElem && fechaActualizacion) {
+        fechaElem.textContent = fechaActualizacion;
+    } else if (fechaElem) {
+        fechaElem.textContent = 'No disponible';
+    }
+    
+    medicamentos = datosMedicamentos.map(function(item, idx) {
+        return mapearMedicamento(item, idx);
+    });
 }
 
 // Cargar datos
