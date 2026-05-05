@@ -362,7 +362,6 @@ h1 {
     font-weight: 600;
 }
 
-/* Footer actualización - NUEVO ESTILO */
 .footer-actualizacion {
     display: flex;
     align-items: center;
@@ -400,6 +399,31 @@ h1 {
 
 .footer-links a:hover {
     color: #1a73e8;
+}
+
+.footer-mis-proyectos {
+    display: flex;
+    justify-content: center;
+    margin: 8px 0;
+}
+
+.footer-mis-proyectos a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    background: #f0f2f5;
+    border-radius: 40px;
+    color: #1a73e8;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.footer-mis-proyectos a:hover {
+    background: #e8f0fe;
+    transform: translateY(-2px);
 }
 
 .footer-copyright {
@@ -490,5 +514,10 @@ h1 {
     
     .footer-actualizacion {
         font-size: 10px;
+    }
+    
+    .footer-mis-proyectos a {
+        font-size: 11px;
+        padding: 6px 16px;
     }
 }
