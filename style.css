@@ -362,6 +362,25 @@ h1 {
     font-weight: 600;
 }
 
+/* Footer actualización - NUEVO ESTILO */
+.footer-actualizacion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #5f6368;
+    background: #e8f0fe;
+    padding: 10px 16px;
+    border-radius: 12px;
+    margin: 8px 0;
+}
+
+.footer-actualizacion strong {
+    color: #1a73e8;
+    font-weight: 600;
+}
+
 .footer-links {
     display: flex;
     flex-wrap: wrap;
@@ -466,6 +485,10 @@ h1 {
     }
     
     .footer-aviso {
+        font-size: 10px;
+    }
+    
+    .footer-actualizacion {
         font-size: 10px;
     }
 }
