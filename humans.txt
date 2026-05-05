@@ -1,0 +1,18 @@
+/* TEAM */
+Web Developer: Pablo Bella
+Email: pablo.s.bella@gmail.com
+Site: https://psbella.github.io
+
+/* THANKS */
+PAMI - por proporcionar los datos abiertos
+GitHub Pages - por el hosting gratuito
+
+/* SITE */
+Last update: 2026-05-05
+Standards: HTML5, CSS3, ES6
+Tools: Python, openpyxl, Git
+
+/* PURPOSE */
+Buscador de medicamentos con precios PAMI.
+Datos actualizados desde datos.pami.org.ar.
+Sin tracking, sin cookies innecesarias.
