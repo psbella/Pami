@@ -136,41 +136,192 @@
             <span>Última actualización del dataset: <strong id="fecha-actualizacion">Cargando...</strong></span>
         </div>
         
-        <div class="footer-links">
-            <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M4 4v16h16V4H4z M8 9h8M8 13h6M8 17h4"/>
-                </svg>
-                CC BY-NC 4.0
-            </a>
-            <a href="privacidad.html">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                    <line x1="9" y1="9" x2="15" y2="15"/>
-                    <line x1="15" y1="9" x2="9" y2="15"/>
-                </svg>
-                Política de Privacidad
-            </a>
-            <a href="mailto:pablo.s.bella@gmail.com?subject=Web%20Precios%20PAMI">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                    <polyline points="22,6 12,13 2,6"/>
-                </svg>
-                Pablo Bella
-            </a>
+        <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Precios PAMI - Buscador de Medicamentos</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google AdSense (reemplazar con tu ID) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXX" crossorigin="anonymous"></script>
+    <!-- Precargar JSON para mejorar rendimiento -->
+    <link rel="preload" href="medicamentos.json" as="fetch" crossorigin="anonymous">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E💊%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Buscador de Medicamentos PAMI</h1>
+            <p>Precios de medicamentos con descuento de PAMI</p>
         </div>
         
-        <div class="footer-copyright">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" stroke-width="1.5">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 8v8M8 12h8"/>
-            </svg>
-            <span>© 2025 - Buscador de Medicamentos PAMI</span>
+        <!-- SECCIÓN BÚSQUEDA -->
+        <div class="busqueda-section">
+            <div class="busqueda-container">
+                <div class="input-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="2">
+                        <circle cx="10" cy="10" r="7"/>
+                        <line x1="15" y1="15" x2="21" y2="21"/>
+                    </svg>
+                    <input type="text" id="buscador" placeholder="ingresá al menos tres caracteres">
+                </div>
+                <button id="btnBuscar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <circle cx="10" cy="10" r="7"/>
+                        <line x1="15" y1="15" x2="21" y2="21"/>
+                    </svg>
+                    Buscar
+                </button>
+            </div>
+            <!-- Contador base -->
+            <div class="contador-base">
+                <span id="totalMedicamentos">0</span> medicamentos y presentaciones en el listado
+            </div>
         </div>
-    </div>
-</footer>
+        
+        <!-- SECCIÓN FILTROS -->
+        <div class="filtros-section">
+            <div class="filtros-container">
+                <div class="filtro-grupo">
+                    <label>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="3" y1="9" x2="21" y2="9"/>
+                            <line x1="3" y1="15" x2="21" y2="15"/>
+                            <line x1="9" y1="3" x2="9" y2="21"/>
+                            <line x1="15" y1="3" x2="15" y2="21"/>
+                        </svg>
+                        Presentación
+                    </label>
+                    <select id="filtroPresentacion">
+                        <option value="">Todas</option>
+                    </select>
+                </div>
+                
+                <div class="filtro-grupo">
+                    <label>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="2">
+                            <path d="M20 7h-4.18A3 3 0 0 0 16 5.18V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/>
+                            <line x1="17" y1="3" x2="21" y2="7"/>
+                            <line x1="21" y1="3" x2="17" y2="7"/>
+                            <circle cx="7" cy="11" r="1"/>
+                            <circle cx="7" cy="7" r="1"/>
+                            <circle cx="7" cy="15" r="1"/>
+                        </svg>
+                        Laboratorio
+                    </label>
+                    <select id="filtroLaboratorio">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+                
+                <div class="filtro-grupo">
+                    <label>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"/>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                        Ordenar por precio
+                    </label>
+                    <select id="ordenPrecio">
+                        <option value="">Sin orden</option>
+                        <option value="asc">$ ↑ Más barato primero</option>
+                        <option value="desc">$ ↓ Más caro primero</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Botón Limpiar Filtros -->
+            <div class="limpiar-container">
+                <button id="btnLimpiarFiltros" class="btn-limpiar">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                    Limpiar filtros
+                </button>
+            </div>
+        </div>
+        
+        <div id="contador" class="contador"></div>
+        
+        <div id="resultados" class="resultados">
+            <div class="mensaje-inicial">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="1.5">
+                    <circle cx="10" cy="10" r="7"/>
+                    <line x1="15" y1="15" x2="21" y2="21"/>
+                </svg>
+                <p>Buscá un medicamento para ver los resultados</p>
+            </div>
+        </div>
+        
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div class="footer-contenido">
+                <div class="footer-aviso">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    <span>Fuente oficial: <strong>datos.pami.org.ar</strong>. Los precios son orientativos y pueden cambiar sin previo aviso.</span>
+                </div>
+                
+                <div class="footer-actualizacion">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <span>Última actualización del dataset: <strong id="fecha-actualizacion">Cargando...</strong></span>
+                </div>
+                
+                <div class="footer-links">
+                    <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4v16h16V4H4z M8 9h8M8 13h6M8 17h4"/>
+                        </svg>
+                        CC BY-NC 4.0
+                    </a>
+                    <a href="privacidad.html">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="9" y1="9" x2="15" y2="15"/>
+                            <line x1="15" y1="9" x2="9" y2="15"/>
+                        </svg>
+                        Política de Privacidad
+                    </a>
+                    <a href="terminos.html">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4v16h16V4H4z M8 9h8M8 13h6M8 17h4"/>
+                        </svg>
+                        Términos y Condiciones
+                    </a>
+                    <a href="mailto:pablo.s.bella@gmail.com?subject=Web%20Precios%20PAMI">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                        Contacto
+                    </a>
+                </div>
+                
+                <div class="footer-copyright">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 8v8M8 12h8"/>
+                    </svg>
+                    <span>© 2025 - Buscador de Medicamentos PAMI</span>
+                </div>
+            </div>
+        </footer>
     </div>
     
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
+</body>
+</html>="script.js"></script>
 </body>
 </html>
