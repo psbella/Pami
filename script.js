@@ -313,6 +313,27 @@ function setupEventListeners() {
     });
 }
 
+// Cargar fecha de actualización
+function cargarFechaActualizacion() {
+    fetch('fecha_actualizacion.json')
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            var fechaElem = document.getElementById('fecha-actualizacion');
+            if (fechaElem && data.fecha) {
+                fechaElem.textContent = data.fecha;
+            }
+        })
+        .catch(function(error) {
+            console.error('Error al cargar fecha:', error);
+            var fechaElem = document.getElementById('fecha-actualizacion');
+            if (fechaElem) {
+                fechaElem.textContent = 'No disponible';
+            }
+        });
+}
+
 // Cargar datos
 fetch('medicamentos.json')
     .then(function(response) {
@@ -338,6 +359,9 @@ fetch('medicamentos.json')
         actualizarOpcionesFiltros(medicamentos);
         
         setupEventListeners();
+        
+        // Cargar la fecha de actualización
+        cargarFechaActualizacion();
         
         document.getElementById('resultados').innerHTML = '<div class="mensaje-inicial"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><line x1="15" y1="15" x2="21" y2="21"/></svg><p>Buscá un medicamento para ver los resultados</p></div>';
         document.getElementById('contador').innerHTML = '';
