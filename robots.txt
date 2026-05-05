@@ -1,0 +1,13 @@
+# Permitir todo a Google y otros bots
+User-agent: *
+Allow: /
+
+# Prohibir acceso a archivos internos
+Disallow: /privacidad.html
+Disallow: /terminos.html
+
+# Mapa del sitio (si tenés)
+Sitemap: https://psbella.github.io/sitemap.xml
+
+# Cachear por 1 día
+Crawl-delay: 1
