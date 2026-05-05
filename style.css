@@ -111,7 +111,7 @@ h1 {
     transform: translateY(0);
 }
 
-/* Contador base (total de medicamentos) */
+/* Contador base */
 .contador-base {
     text-align: right;
     font-size: 13px;
@@ -182,7 +182,7 @@ h1 {
     box-shadow: 0 0 0 3px rgba(26,115,232,0.1);
 }
 
-/* Contenedor y botón limpiar filtros */
+/* Limpiar filtros */
 .limpiar-container {
     margin-top: 20px;
     display: flex;
