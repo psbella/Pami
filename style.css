@@ -560,4 +560,12 @@ body {
         font-size: 11px;
         padding: 6px 16px;
     }
+
+    .tarjeta {
+    will-change: transform;
 }
+
+    .footer-aviso, .footer-actualizacion {
+    background: rgba(248, 249, 250, 0.95);
+}
+    }
